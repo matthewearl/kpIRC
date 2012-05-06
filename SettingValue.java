@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-import java.lang.*
-import org.eclipse.swt.graphics.RGB.*;
+import java.lang.*;
+import org.eclipse.swt.graphics.RGB;
 
 // TODO, Strings should be escaped by some means before being stored
 // and unescaped before being read
@@ -35,7 +35,7 @@ public class SettingValue
   }
   SettingValue ( boolean b )
   {
-    this.val = String.valueof(b);
+    this.val = String.valueOf(b);
   }
   SettingValue ( RGB rgb )
   {
@@ -43,22 +43,27 @@ public class SettingValue
     int g = rgb.green;
     int b = rgb.blue;
 
-    StringBuffer rStr = new StringBuffer ( String.toHexString(r) );
-    StringBuffer gStr = new StringBuffer ( String.toHexString(g) );
-    StringBuffer bStr = new StringBuffer ( String.toHexString(b) );
-    while(rStr.length < 2)
+    StringBuffer rStr = new StringBuffer ( Integer.toHexString(r) );
+    StringBuffer gStr = new StringBuffer ( Integer.toHexString(g) );
+    StringBuffer bStr = new StringBuffer ( Integer.toHexString(b) );
+    while(rStr.length() < 2)
       rStr.insert(0, '0');
-    while(gStr.length < 2)
+    while(gStr.length() < 2)
       gStr.insert(0, '0');
-    while(bStr.length < 2)
+    while(bStr.length() < 2)
       bStr.insert(0, '0');
     val = "#" + rStr + gStr + bStr;
     val = val.toUpperCase();
   }
 
+  public String toString ()
+  {
+    return val;
+  }
+
   public String asString ()
   {
-    return value;
+    return val;
   }
 
   public int asInt ()
@@ -85,7 +90,7 @@ public class SettingValue
   public RGB asRGB ()
   {
     if(val.length() != 7 || val.charAt(0) != '#')
-      return new SettingConversionException ( "Setting is not readable as an RGB" );
+      throw new SettingConversionException ( "Setting is not readable as an RGB" );
     try
     {
       return new RGB ( Integer.parseInt(val.substring(1,3), 16),

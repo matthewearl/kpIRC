@@ -66,9 +66,9 @@ public class Settings
     return null;
   }
   
-  synchronized static private Element createChildElement ( Element parent, String tagName )
+  synchronized static private Element createChildElement ( Node parent, String tagName )
   {
-	Element child;
+	Element child = null;
     try
     {
       child = doc.createElement ( tagName );
@@ -140,7 +140,7 @@ public class Settings
     String keyName = pathComponents[ pathComponents.length - 1 ];
     el = makeChildElementWithAttribute ( el, "setting", "key", keyName );
     
-    el.setAttribute ( "value", value.asString() );
+    el.setAttribute ( "value", value.toString() );
 
     save();
   }
