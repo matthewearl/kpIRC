@@ -14,3 +14,7 @@ Run with:
 
 <pre>ant IrcClient</pre>
 
+h2. Settings
+
+Settings can be changed by editing Settings.xml in the root of the repository. The schema is reasonably self-explanatory.
+
