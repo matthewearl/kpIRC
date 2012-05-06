@@ -20,6 +20,7 @@ package ircclient.model;
 import java.util.*;
 import java.lang.*;
 import kpl.irc.*;
+import kpl.settings.Settings;
 
 // Server pane recieves events from the server, and routes them to
 // the appropriate channel pane
@@ -323,7 +324,10 @@ public class ServerPane extends Pane implements IrcEventListener
     port = p;
     changeTitle("> " + hostName);
         
-    connection = new IrcConnection("kpIRC-User", "kpIRC-User", "kpIRC-User");
+    connection = new IrcConnection(
+    		Settings.get("Irc.nick").asString(),
+    		Settings.get("Irc.user").asString(),
+    		Settings.get("Irc.name").asString());
     currentNick = new IrcString("kpIRC-User");
     connection.addEventListener(this);
     connection.connect(hostName, port);

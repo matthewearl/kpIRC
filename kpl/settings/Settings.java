@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+package kpl.settings;
 import javax.xml.parsers.*;
 import java.io.*;
 import org.w3c.dom.*;

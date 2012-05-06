@@ -24,6 +24,7 @@ import org.eclipse.swt.events.*;
 import ircclient.model.*;
 import java.util.*;
 import java.lang.*;
+import kpl.settings.Settings;
 
 /**
  * This class is displays IrcTextLines
@@ -75,12 +76,12 @@ public class IrcText extends Canvas implements PaintListener, SelectionListener,
     lastScrollPosition = lineSource.size()-1;
 
     // Allocate colours now to speed stuff up later
-    plainForegroundColor = new Color ( getDisplay(), 0, 0, 0 );
-    plainBackgroundColor = new Color ( getDisplay(), 255, 255, 255 );
-    alertColor = new Color ( getDisplay(), 255, 0, 0 );
-    joinColor = new Color ( getDisplay(), 0, 128, 0 );
-    leaveColor = new Color ( getDisplay(), 0x98, 0x40, 0 );
-    infoColor = new Color ( getDisplay(), 0, 0, 128 );
+    plainForegroundColor = new Color ( getDisplay(), Settings.get("Colours.defaultFG").asRGB() );
+    plainBackgroundColor = new Color ( getDisplay(), Settings.get("Colours.defaultBG").asRGB() );
+    alertColor = new Color ( getDisplay(), Settings.get("Colours.alertColour").asRGB() );
+    joinColor = new Color ( getDisplay(), Settings.get("Colours.joinColour").asRGB() );
+    leaveColor = new Color ( getDisplay(), Settings.get("Colours.leaveColour").asRGB() );
+    infoColor = new Color ( getDisplay(), Settings.get("Colours.infoColour").asRGB() );
 
     wrappedLines = null;
   }

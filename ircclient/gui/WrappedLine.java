@@ -19,9 +19,9 @@
 package ircclient.gui;
 import java.util.*;
 import java.lang.*;
-import org.eclipse.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import kpl.settings.Settings;
 
 class LineSection
 {
@@ -228,8 +228,9 @@ class MircColourCodeReader
 
   Character getCharacter ( Display d, GC gc )
   {
-    return getCharacter(d, gc, new Color ( d, 0,0,0 ),
-        new Color ( d, 255,255,255 ));
+    return getCharacter(d, gc, 
+                        new Color ( d, Settings.get("Colours.defaultFG").asRGB() ),
+                        new Color ( d, Settings.get("Colours.defaultBG").asRGB() ));
   }
   
   Character getCharacter ()
