@@ -348,7 +348,7 @@ public class IrcText extends Canvas implements PaintListener, SelectionListener,
   public void paintBackground ( int x, int y, int width, int height )
   {
     GC gc = new GC(this);
-    gc.setBackground ( new Color( getDisplay(), 255, 255, 255 ));
+    gc.setBackground ( new Color( getDisplay(), Settings.get("Colours.defaultBG").asRGB() ));
     gc.fillRectangle ( x, y, width, height );
     gc.dispose();
   }
