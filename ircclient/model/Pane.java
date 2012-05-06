@@ -121,18 +121,24 @@ abstract public class Pane
         {
         args = new String[0];
       }
-     
-      if(commandMap.containsKey(cmdStr))
+
+      // Allow partially entered commands by performing a command lookup.
+      Set choices = getCommandsWithPrefix(cmdStr);
+
+      if(choices.size() == 1)
       {
+        cmdStr = (String)choices.iterator().next();
         PaneCommand cmd = (PaneCommand)commandMap.get(cmdStr);
         if(args.length < cmd.minArgs)
         {
           throw new UserInputException("Not enough arguments to " + cmdStr);
         }
         cmd.run(args);
-      } else
+      } else if(choices.size() == 0)
       {
         UnknownCommand(cmdStr, line);
+      } else {
+        AmbiguousCommand(cmdStr, choices, line);
       }
     } catch( UserInputException e )
     {
@@ -159,6 +165,27 @@ abstract public class Pane
     return out;
   }
   
+  // returns a set of Strings
+  protected Set getCommandsWithPrefix ( String prefix )
+  {
+    prefix = prefix.toLowerCase();
+
+    SortedMap subMap = commandMap.tailMap(prefix);
+    Set out = new TreeSet();
+
+    Iterator it = subMap.keySet().iterator();
+    while(it.hasNext())
+    {
+      String cmd = (String)it.next();
+      if(!cmd.startsWith(prefix))
+        break;
+
+      out.add(cmd);
+    }
+
+    return out;
+  }
+  
   // returns a set of Completions
   public Set completeLine ( String linePassed, int cursorPos )
   {
@@ -178,21 +205,33 @@ abstract public class Pane
     // Only complete if we are typing at the end of a word or line
     if(cursorPos < linePassed.length() && linePassed.charAt(cursorPos) == ' ')
       return out;
-
-    String partialCmd = line.substring(1).toLowerCase();
-
-    SortedMap subMap = commandMap.tailMap(partialCmd);
     
-    Iterator it = subMap.keySet().iterator();
+    String partialCmd = line.substring(1);
+    Iterator it = getCommandsWithPrefix(partialCmd).iterator();
     while(it.hasNext())
     {
       String cmd = (String)it.next();
-      if(!cmd.startsWith(partialCmd))
-        break;
-      
       out.add( new Completion(cmd+" ", partialCmd.length()));
     }
     return out;
+  }
+  
+  protected void AmbiguousCommand( String command, Set choices, String line ) throws UserInputException
+  {
+    String errStr = "Ambiguous command " + command + ": ";
+    Iterator it = choices.iterator();
+
+    while(it.hasNext())
+    {
+      String choice = (String)it.next();
+
+      errStr += " " + choice;
+      if(it.hasNext()) {
+        choice += ", ";
+      }
+    }
+
+    throw new UserInputException(errStr);
   }
   
   protected void UnknownCommand( String command, String line ) throws UserInputException
