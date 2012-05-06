@@ -1,0 +1,16 @@
+h1. IRC Client
+
+h2. Introduction
+
+Small IRC client I wrote a while back (around 2005). Features coloured text (via a custom control) and command auto-completion.
+
+h2. Building and running
+
+Build with:
+
+<pre>ant build</pre>
+
+Run with:
+
+<pre>ant IrcClient</pre>
+

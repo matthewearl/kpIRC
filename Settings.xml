@@ -1,0 +1,16 @@
+<settings>
+  <section name="Irc">
+    <setting key="nick" value="IrcClientUser" />
+    <setting key="user" value="IrcClientUser" />
+    <setting key="name" value="IrcClientUser" />
+  </section>
+  <section name="Colours">
+    <setting key="defaultBG" value="#FFFFFF" />
+    <setting key="defaultFG" value="#000000" />
+    <setting key="alertColour" value="#FF0000" />
+    <setting key="joinColour" value="#008000" />
+    <setting key="leaveColour" value="#984000" />
+    <setting key="infoColour" value="#000080" />
+  </section>
+</settings>
+
