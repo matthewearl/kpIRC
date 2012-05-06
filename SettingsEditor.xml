@@ -1,0 +1,36 @@
+<settingseditor>
+    <page title="General">
+        <page title="IRC">
+            <input type="text" description="Nick" setting="Irc.nick">
+                Name used to uniquely identify the client.
+            </input>
+            <input type="text" description="User" setting="Irc.user">
+                Username of the client on the host.
+            </input>
+            <input type="text" setting="Irc.name">
+                Real name of the client.
+            </input>
+        </page>
+        <page title="Colours">
+            <input type="colour" description="Foreground colour" setting="Colours.defaultFG">
+                Default foreground colour for text.
+            </input>
+            <input type="colour" description="Background colour" value="Colours.defaultBG">
+                Default background colour for text.
+            </input>
+            <input type="colour" description="colour" value="Colours.alertColour">
+                Colour of alert messages.
+            </input>
+            <input type="colour" description="colour" value="Colours.joinColour">
+                Colour of join messages.
+            </input>
+            <input type="colour" description="colour" value="Colours.leaveColour">
+                Colour of leave messages.
+            </input>
+            <input type="colour" description="colour" value="Colours.infoColour">
+                Colour of informational messages.
+            </input>
+        </page>
+    </page>
+</settingseditor>
+
