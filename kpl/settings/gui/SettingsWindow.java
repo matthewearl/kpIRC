@@ -5,9 +5,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
+import kpl.gui.ColourPicker;
+import kpl.gui.ColourPickerListener;
 import kpl.gui.FontLabel;
 import kpl.settings.model.*;
 import kpl.settings.model.SettingsEditor.*;
@@ -112,9 +115,15 @@ public class SettingsWindow
     
     protected Control makeInnerInputControl(Composite parent, SettingValue val)
     {
-      Text text = new Text(parent, SWT.SINGLE);
-      text.setText(val.asString());
-      return text;
+      ColourPicker colourPicker = new ColourPicker(parent, val.asRGB());
+      colourPicker.addListener(new ColourPickerListener() 
+      {
+        public void colourSelected(RGB colour)
+        {
+          onSettingChange(new SettingValue(colour));
+        }
+      });
+      return colourPicker;
     }
   }
   
