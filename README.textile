@@ -2,7 +2,7 @@ h1. IRC Client
 
 h2. Introduction
 
-Small IRC client I wrote a while back (around 2005). Features coloured text (via a custom control) and command auto-completion.
+Small IRC client I wrote a while back (around 2005). Features coloured text (via a custom control), command auto-completion and vaguely Eclipse like Settings window.
 
 h2. Building and running
 
@@ -13,8 +13,4 @@ Build with:
 Run with:
 
 <pre>ant IrcClient</pre>
-
-h2. Settings
-
-Settings can be changed by editing Settings.xml in the root of the repository. The schema is reasonably self-explanatory.
 
