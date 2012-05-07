@@ -20,7 +20,6 @@ package kpl.settings;
 import javax.xml.parsers.*;
 import java.io.*;
 import org.w3c.dom.*;
-import java.lang.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;

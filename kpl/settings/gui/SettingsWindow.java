@@ -3,12 +3,15 @@ package kpl.settings.gui;
 import java.util.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 import kpl.gui.FontLabel;
 import kpl.settings.model.*;
 import kpl.settings.model.SettingsEditor.*;
+import kpl.settings.SettingValue;
 import kpl.settings.Settings;
 
 public class SettingsWindow
@@ -19,11 +22,19 @@ public class SettingsWindow
   private Map itemsToPageControls;
   private Composite pageContainer;
   private StackLayout pageContainerLayout;
+  private Set settingInputs;
   
   private abstract class SettingInput
   {
+    private Input input;
+    private SettingValue savedValue;
+    private SettingValue currentValue;
+    
     public SettingInput(Composite parent, Input input)
     {
+      this.input = input;
+      settingInputs.add(this);
+      
       // Label on the left.
       FontLabel label = new FontLabel(parent, 0);
       label.setStyle(SWT.BOLD);
@@ -34,7 +45,9 @@ public class SettingsWindow
       label.setLayoutData(gridData);
       
       // Input control.
-      Control innerInput = makeInnerInputControl(parent);
+      savedValue = Settings.get(input.getSetting());
+      currentValue = savedValue;
+      Control innerInput = makeInnerInputControl(parent, savedValue);
       gridData = new GridData(SWT.FILL, SWT.TOP, true, false);
       gridData.verticalSpan = 1;
       gridData.horizontalSpan = 1;
@@ -50,7 +63,21 @@ public class SettingsWindow
       helpLabel.setLayoutData(gridData);
     }
     
-    abstract protected Control makeInnerInputControl(Composite parent);
+    abstract protected Control makeInnerInputControl(Composite parent, SettingValue val);
+    
+    final protected void onSettingChange(SettingValue val)
+    {
+      currentValue = val;
+    }
+    
+    private void apply()
+    {
+      if (!currentValue.equals(savedValue))
+      {
+        Settings.put(input.getSetting(), currentValue);
+        savedValue = currentValue;
+      }
+    }
   }
 
   private class TextSettingInput extends SettingInput
@@ -60,9 +87,18 @@ public class SettingsWindow
       super(parent, input);
     }
 
-    protected Control makeInnerInputControl(Composite parent)
+    protected Control makeInnerInputControl(Composite parent, SettingValue val)
     {
-      Text text = new Text(parent, SWT.SINGLE);
+      final Text text = new Text(parent, SWT.SINGLE);
+      text.setText(val.asString());
+      text.addModifyListener(new ModifyListener()
+      {
+        public void modifyText(ModifyEvent e)
+        {
+          onSettingChange(new SettingValue(text.getText()));
+        }
+      });
+      
       return text;
     }
   }
@@ -74,9 +110,10 @@ public class SettingsWindow
       super(parent, input);
     }
     
-    protected Control makeInnerInputControl(Composite parent)
+    protected Control makeInnerInputControl(Composite parent, SettingValue val)
     {
       Text text = new Text(parent, SWT.SINGLE);
+      text.setText(val.asString());
       return text;
     }
   }
@@ -97,7 +134,7 @@ public class SettingsWindow
       title.setHeight(24);
       title.setStyle(SWT.ITALIC);
       title.setText(page.getTitle());
-      GridData gridData = new GridData(SWT.FILL, SWT.TOP, false, false);
+      GridData gridData = new GridData(SWT.FILL, SWT.TOP, true, false);
       gridData.horizontalSpan = gridLayout.numColumns;
       gridData.verticalSpan = 1;
       title.setLayoutData(gridData);
@@ -155,11 +192,71 @@ public class SettingsWindow
     }
   }
   
+  private void applyAllChanges()
+  {
+    Iterator it = settingInputs.iterator();
+    
+    while (it.hasNext())
+    {
+      SettingInput settingInput = (SettingInput)it.next();
+      settingInput.apply();
+    }
+  }
+
+  private Control makeButtons (Composite parent)
+  {
+    Composite buttonContainer = new Composite(shell, 0);
+    GridLayout buttonGridLayout = new GridLayout();
+    buttonGridLayout.numColumns = 3;
+    buttonContainer.setLayout(buttonGridLayout);
+    
+    Button cancelButton = new Button(buttonContainer, 0);
+    Button applyButton = new Button(buttonContainer, 0);
+    Button okButton = new Button(buttonContainer, 0);
+    
+    cancelButton.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false));
+    applyButton.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
+    okButton.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
+    
+    cancelButton.setText("Cancel");
+    applyButton.setText("Apply");
+    okButton.setText("Ok");
+    
+    cancelButton.addListener(SWT.Selection, new Listener()
+    {
+      public void handleEvent(Event event)
+      {
+        shell.close();
+      }
+    });
+    
+    applyButton.addListener(SWT.Selection, new Listener()
+    {
+      public void handleEvent(Event event)
+      {
+        applyAllChanges();
+      }
+    });
+    
+    okButton.addListener(SWT.Selection, new Listener()
+    {
+      public void handleEvent(Event event)
+      {
+        applyAllChanges();
+        shell.close();
+      }
+    });
+    
+    return buttonContainer;
+  }
+  
   public SettingsWindow(Shell parent, SettingsEditor settingsEditor)
   {
     this.settingsEditor = settingsEditor;
+    
     itemsToPages = new HashMap();
     itemsToPageControls = new HashMap();
+    settingInputs = new HashSet();
     
     // Create shell
     shell = new Shell(parent);
@@ -167,26 +264,31 @@ public class SettingsWindow
     
     // Grid layout for the whole shell. Elements are a tree and page container.
     GridLayout gridLayout = new GridLayout();
-    gridLayout.numColumns = 4;
-    gridLayout.makeColumnsEqualWidth = true;
+    gridLayout.numColumns = 2;
     shell.setLayout(gridLayout);
     
     // Tree
     Tree tree = new Tree(shell, SWT.BORDER);
-    GridData gridData = new GridData(GridData.FILL_BOTH);
+    GridData gridData = new GridData(SWT.LEFT, SWT.FILL, false, true);
     gridData.horizontalSpan = 1;
     gridData.verticalSpan = 1;
     tree.setLayoutData(gridData);
     
     // Page container (a Composite for holding the pages in a StackLayout).
     pageContainer = new Composite(shell, 0);
-    gridData = new GridData(GridData.FILL_BOTH);
-    gridData.horizontalSpan = 3;
+    gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+    gridData.horizontalSpan = 1;
     gridData.verticalSpan = 1;
     pageContainer.setLayoutData(gridData);
     pageContainerLayout = new StackLayout();
     pageContainer.setLayout(pageContainerLayout);
     
+    // Cancel, Apply, Ok buttons
+    Control buttons = makeButtons(shell);
+    gridData = new GridData(SWT.FILL, SWT.FILL, true, false);
+    gridData.horizontalSpan = gridLayout.numColumns;
+    buttons.setLayoutData(gridData);
+
     // Add TreeItems into the tree and corresponding PageControls into the page container.
     Iterator it = settingsEditor.getPages().iterator();
     while (it.hasNext())
@@ -207,6 +309,8 @@ public class SettingsWindow
         pageContainer.layout();
       }
     });
+    
+    shell.pack();
   }
 
   public void close()

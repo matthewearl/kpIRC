@@ -17,28 +17,31 @@
  */
 
 package kpl.settings;
-import java.lang.*;
 import org.eclipse.swt.graphics.RGB;
 
 // TODO, Strings should be escaped by some means before being stored
 // and unescaped before being read
+
+/**
+ * Represents a value for a setting. Objects of this class are immutable.
+ */
 public class SettingValue
 {
   private String val;
 
-  SettingValue ( String val )
+  public SettingValue ( String val )
   {
     this.val = val;
   }
-  SettingValue ( int i )
+  public SettingValue ( int i )
   {
     this.val = String.valueOf(i);
   }
-  SettingValue ( boolean b )
+  public SettingValue ( boolean b )
   {
     this.val = String.valueOf(b);
   }
-  SettingValue ( RGB rgb )
+  public SettingValue ( RGB rgb )
   {
     int r = rgb.red;
     int g = rgb.green;
@@ -101,5 +104,15 @@ public class SettingValue
     {
       throw new SettingConversionException ( "Setting is not readable as an RGB" );
     }
+  }
+  
+  public boolean equals(Object obj)
+  {
+    if (!(obj instanceof SettingValue))
+    {
+      return false;
+    }
+    
+    return ((SettingValue)obj).val == val;
   }
 }
