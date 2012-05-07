@@ -18,7 +18,6 @@
 
 package ircclient.model;
 import kpl.irc.*;
-import java.util.*;
 
 public class IrcChannelUser
 {
