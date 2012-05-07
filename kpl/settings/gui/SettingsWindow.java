@@ -6,6 +6,7 @@ import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
+import kpl.gui.FontLabel;
 import kpl.settings.model.*;
 import kpl.settings.model.SettingsEditor.*;
 import kpl.settings.Settings;
@@ -13,23 +14,43 @@ import kpl.settings.Settings;
 public class SettingsWindow
 {
   private Shell shell;
-  private Shell parent;
   private SettingsEditor settingsEditor;
   private Map itemsToPages;
   private Map itemsToPageControls;
   private Composite pageContainer;
   private StackLayout pageContainerLayout;
   
-  private class SettingInput extends Composite
+  private abstract class SettingInput
   {
     public SettingInput(Composite parent, Input input)
     {
-      super(parent, 0);
-      setLayout(new FillLayout());
+      // Label on the left.
+      FontLabel label = new FontLabel(parent, 0);
+      label.setStyle(SWT.BOLD);
+      label.setText(input.getDescription() + ":");
+      GridData gridData = new GridData(SWT.RIGHT, SWT.TOP, false, false);
+      gridData.verticalSpan = 2;
+      gridData.horizontalSpan = 1;
+      label.setLayoutData(gridData);
       
-      Label label = new Label(this, 0);
-      label.setText(input.getDescription() + ": " + input.getHelp());
+      // Input control.
+      Control innerInput = makeInnerInputControl(parent);
+      gridData = new GridData(SWT.FILL, SWT.TOP, true, false);
+      gridData.verticalSpan = 1;
+      gridData.horizontalSpan = 1;
+      innerInput.setLayoutData(gridData);
+      
+      // Help text.
+      FontLabel helpLabel = new FontLabel(parent, 0);
+      helpLabel.setStyle(SWT.ITALIC);
+      helpLabel.setText(input.getHelp());
+      gridData = new GridData(SWT.FILL, SWT.TOP, true, false);
+      gridData.verticalSpan = 1;
+      gridData.horizontalSpan = 1;
+      helpLabel.setLayoutData(gridData);
     }
+    
+    abstract protected Control makeInnerInputControl(Composite parent);
   }
 
   private class TextSettingInput extends SettingInput
@@ -37,6 +58,12 @@ public class SettingsWindow
     public TextSettingInput(Composite parent, Input input)
     {
       super(parent, input);
+    }
+
+    protected Control makeInnerInputControl(Composite parent)
+    {
+      Text text = new Text(parent, SWT.SINGLE);
+      return text;
     }
   }
 
@@ -46,6 +73,12 @@ public class SettingsWindow
     {
       super(parent, input);
     }
+    
+    protected Control makeInnerInputControl(Composite parent)
+    {
+      Text text = new Text(parent, SWT.SINGLE);
+      return text;
+    }
   }
   
   private class PageControl extends Composite
@@ -54,10 +87,22 @@ public class SettingsWindow
     {
       super(pageContainer, 0);
       
+      // Grid layout
       GridLayout gridLayout = new GridLayout();
-      gridLayout.numColumns = 1;
+      gridLayout.numColumns = 2;
       setLayout(gridLayout);
       
+      // Title
+      FontLabel title = new FontLabel(this, 0);
+      title.setHeight(24);
+      title.setStyle(SWT.ITALIC);
+      title.setText(page.getTitle());
+      GridData gridData = new GridData(SWT.FILL, SWT.TOP, false, false);
+      gridData.horizontalSpan = gridLayout.numColumns;
+      gridData.verticalSpan = 1;
+      title.setLayoutData(gridData);
+            
+      // Inputs
       Iterator it = page.getInputs().iterator();
       while (it.hasNext())
       {
@@ -75,6 +120,14 @@ public class SettingsWindow
           throw new RuntimeException("Invalid input type: " + input.getType());
         }
       }
+      
+      // Space filler.
+      Control spaceFiller = new Label(this, 0);
+      gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+      gridData.horizontalSpan = gridLayout.numColumns;
+      spaceFiller.setLayoutData(gridData);
+      
+      this.pack();
     }
   }
   
@@ -104,7 +157,6 @@ public class SettingsWindow
   
   public SettingsWindow(Shell parent, SettingsEditor settingsEditor)
   {
-    this.parent = parent;
     this.settingsEditor = settingsEditor;
     itemsToPages = new HashMap();
     itemsToPageControls = new HashMap();
@@ -120,7 +172,7 @@ public class SettingsWindow
     shell.setLayout(gridLayout);
     
     // Tree
-    Tree tree = new Tree(shell, 0);
+    Tree tree = new Tree(shell, SWT.BORDER);
     GridData gridData = new GridData(GridData.FILL_BOTH);
     gridData.horizontalSpan = 1;
     gridData.verticalSpan = 1;
