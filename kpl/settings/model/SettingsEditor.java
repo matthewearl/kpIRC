@@ -61,6 +61,11 @@ public abstract class SettingsEditor
     {
       return subPages;
     }
+
+    public List getInputs()
+    {
+      return inputs;
+    }
   }
   
   private List pages;

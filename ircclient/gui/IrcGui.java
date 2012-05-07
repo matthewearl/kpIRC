@@ -587,7 +587,7 @@ public class IrcGui extends ShellAdapter implements IrcModelListener, CTabFolder
         });
     
     MenuItem settingsItem = new MenuItem(ircMenu, SWT.NONE);
-    settingsItem.setText("Settings");
+    settingsItem.setText("Settings...");
     settingsItem.setAccelerator(SWT.ALT | 'T');
     settingsItem.addSelectionListener( new SelectionAdapter()
         { public void widgetSelected(SelectionEvent e)
