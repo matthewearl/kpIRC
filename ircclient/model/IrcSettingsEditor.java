@@ -6,7 +6,7 @@ public class IrcSettingsEditor extends SettingsEditor
 {
   public IrcSettingsEditor ()
   {
-    Page generalPage = addPage("General", null);
+    Page generalPage = addPage("General");
     Page ircPage = addPage("IRC", generalPage);
     Page coloursPage = addPage("Colours", generalPage);
 
@@ -19,5 +19,10 @@ public class IrcSettingsEditor extends SettingsEditor
     addInput(coloursPage, INPUT_TYPE_COLOUR, "colour", "Colours.joinColour", "Colour of join messages.");
     addInput(coloursPage, INPUT_TYPE_COLOUR, "colour", "Colours.leaveColour", "Colour of leave messages.");
     addInput(coloursPage, INPUT_TYPE_COLOUR, "colour", "Colours.infoColour", "Colour of informational messages.");
+  }
+
+  private Page addPage(String string)
+  {
+    return addPage(string, null);
   }
 }

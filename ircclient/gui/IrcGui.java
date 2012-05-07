@@ -18,12 +18,12 @@
 
 package ircclient.gui;
 import ircclient.model.*;
-import java.lang.*;
 import java.util.*;
+import kpl.settings.gui.SettingsWindow;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -397,7 +397,6 @@ class ServerPage extends IrcPage
 
 class ChannelPage extends IrcPage implements ChannelPaneListener
 {
-  private ChannelPane channelPane;
   private org.eclipse.swt.widgets.List userList;
   private Text topicText;
   
@@ -574,7 +573,7 @@ public class IrcGui extends ShellAdapter implements IrcModelListener, CTabFolder
     Menu mainMenu = new Menu(shell, SWT.BAR);
     shell.setMenuBar(mainMenu);
     MenuItem ircMenuItem = new MenuItem(mainMenu, SWT.CASCADE);
-    ircMenuItem.setText("IRC");
+    ircMenuItem.setText("IRC Client");
     Menu ircMenu = new Menu(shell, SWT.DROP_DOWN);
     ircMenuItem.setMenu(ircMenu);
     
@@ -584,6 +583,15 @@ public class IrcGui extends ShellAdapter implements IrcModelListener, CTabFolder
     newServerTabItem.addSelectionListener( new SelectionAdapter()
         { public void widgetSelected(SelectionEvent e)
           { model.newServerPane();
+          }
+        });
+    
+    MenuItem settingsItem = new MenuItem(ircMenu, SWT.NONE);
+    settingsItem.setText("Settings");
+    settingsItem.setAccelerator(SWT.ALT | 'T');
+    settingsItem.addSelectionListener( new SelectionAdapter()
+        { public void widgetSelected(SelectionEvent e)
+          { new SettingsWindow(shell, new IrcSettingsEditor()).open();
           }
         });
     

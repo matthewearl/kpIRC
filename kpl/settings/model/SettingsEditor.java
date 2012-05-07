@@ -3,9 +3,6 @@ import java.util.*;
 
 public abstract class SettingsEditor
 {
-  public final static int INPUT_TYPE_COLOUR = 0;
-  public final static int INPUT_TYPE_TEXT = 1;
-  
   public class Input
   {
     private int type;
@@ -59,9 +56,21 @@ public abstract class SettingsEditor
     {
       return title;
     }
+
+    public List getSubPages()
+    {
+      return subPages;
+    }
   }
   
   private List pages;
+  public final static int INPUT_TYPE_COLOUR = 0;
+  public final static int INPUT_TYPE_TEXT = 1;
+  
+  public SettingsEditor()
+  {
+    pages = new Vector();
+  }
   
   protected final Page addPage(String title, Page parent)
   {
@@ -69,7 +78,7 @@ public abstract class SettingsEditor
     
     if (parent != null)
     {
-      parent.subPages.add(parent);
+      parent.subPages.add(page);
     } else
     {
       pages.add(page);
